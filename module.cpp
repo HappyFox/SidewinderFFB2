@@ -138,15 +138,15 @@ BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* pdidInstance,
 void init() {
     HRESULT hr;
     const wchar_t CLASS_NAME[] = L"SidewinderFFB2 Message Window Class";
-    WNDCLASSEX wx = {};
+    WNDCLASSEXW wx = {};
     wx.cbSize = sizeof(WNDCLASSEX);
     wx.lpfnWndProc = DefWindowProc;
     //wx.hInstance = HINST_THISCOMPONENT;
     wx.hInstance = GetCurrentModuleHandle();
-    wx.lpszClassName = (LPCSTR)CLASS_NAME;
+    wx.lpszClassName = (LPWSTR)CLASS_NAME;
 
-    if (RegisterClassEx(&wx)) {
-        hwnd = CreateWindowEx(0, (LPCSTR)CLASS_NAME, (LPCSTR)"dummy_name", 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, NULL, NULL);
+    if (RegisterClassExW(&wx)) {
+        hwnd = CreateWindowExW(0, (LPWSTR)CLASS_NAME, (LPWSTR)L"dummy_name", 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, NULL, NULL);
     }
 
     if (NULL == hwnd) {
