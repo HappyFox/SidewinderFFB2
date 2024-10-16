@@ -461,8 +461,16 @@ public:
 
 
 PYBIND11_MODULE(SidewinderFFB2, m) {
+    m.doc() = "A simple wrapper for the directx api's to allow the read of,\
+and sending force effects to a Microsoft Force Feedback 2 Joystick."; // optional module docstring
+
+    py::options options;
+    options.disable_function_signatures();
+    //options.disable_user_defined_docstrings(); 
+
     py::class_<_JoyState>(m, "JoyState")
         .def(py::init<const long, const long, const long, const long, py::object, py::object>())
+        
         .def_readonly("x", &_JoyState::x)
         .def_readonly("y", &_JoyState::y)
         .def_readonly("r_z", &_JoyState::Rz)
@@ -473,19 +481,21 @@ PYBIND11_MODULE(SidewinderFFB2, m) {
             [](const _JoyState& a) {
 
                 return "<JoyState: '" + std::to_string(a.x) + ", " + std::to_string(a.y) + ", " + std::to_string(a.Rz) + ", " + std::to_string(a.throttle) + ", " + py::repr(a.buttons).cast<std::string>() + "," + py::repr(a.pov).cast<std::string>() + "'>";
-            });
+            })
+        .doc() = "A wrapper for the joystick state, returned from the `poll` function";
 
     py::class_<_ConstantForce>(m, "ConstantForce")
         .def(py::init<>())
         .def("set_direction", &_ConstantForce::set_direction)
-        .def("set_gain", &_ConstantForce::set_gain);
+        .def("set_gain", &_ConstantForce::set_gain)
+        .doc() = "A wrapper for creating a constant force effect. This will try \
+to move the joystick to the specified location.";
 
     py::class_<_BuzzForce>(m, "BuzzForce")
         .def(py::init<>())
         .def("start", &_BuzzForce::start);
 
-    m.def("init", &init, R"pbdoc(
-        Initialize the joystick.
+    m.def("init", &init, R"pbdoc(Initialize the joystick.
     )pbdoc");
     m.def("poll", &poll, R"pbdoc(
         Poll and return the axis values.
@@ -501,8 +511,6 @@ PYBIND11_MODULE(SidewinderFFB2, m) {
         Reset the force feedback system.
     )pbdoc");
 
-    m.attr("AXIS_X") = py::int_(DIJOFS_X);
-    m.attr("AXIS_Y") = py::int_(DIJOFS_Y);
     m.attr("DI_FFNOMINALMAX") = py::int_(DI_FFNOMINALMAX);
 
 #ifdef VERSION_INFO
